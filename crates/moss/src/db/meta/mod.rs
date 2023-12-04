@@ -221,6 +221,7 @@ impl Database {
                             .filter(|l| l.id.0 == entry.id.0)
                             .map(|p| p.provider.0.clone())
                             .collect(),
+                        conflicts: Default::default(),
                         uri: entry.uri,
                         hash: entry.hash,
                         download_size: entry.download_size.map(|i| i as u64),
@@ -299,6 +300,7 @@ impl Database {
             licenses: licenses.into_iter().map(|l| l.license).collect(),
             dependencies: dependencies.into_iter().map(|d| d.dependency.0).collect(),
             providers: providers.into_iter().map(|p| p.provider.0).collect(),
+            conflicts: Default::default(),
             uri: entry.uri,
             hash: entry.hash,
             download_size: entry.download_size.map(|i| i as u64),

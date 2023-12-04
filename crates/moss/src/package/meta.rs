@@ -7,7 +7,7 @@ use std::{collections::HashSet, fmt};
 use stone::payload;
 use thiserror::Error;
 
-use crate::{dependency, Dependency, Provider};
+use crate::{dependency, Conflict, Dependency, Provider};
 
 /// A package identifier constructed from metadata fields
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -74,6 +74,8 @@ pub struct Meta {
     pub dependencies: HashSet<Dependency>,
     /// All providers, including name()
     pub providers: HashSet<Provider>,
+    /// All conflicts
+    pub conflicts: HashSet<Conflict>,
     /// If relevant: uri to fetch from
     pub uri: Option<String>,
     /// If relevant: hash for the download
@@ -104,6 +106,7 @@ impl Meta {
             .filter_map(|meta| meta_string(meta, payload::meta::Tag::License))
             .collect();
         let dependencies = payload.iter().filter_map(meta_dependency).collect();
+        let conflicts = payload.iter().filter_map(meta_conflict).collect();
         let providers = payload
             .iter()
             .filter_map(meta_provider)
@@ -127,6 +130,7 @@ impl Meta {
             licenses,
             dependencies,
             providers,
+            conflicts,
             uri,
             hash,
             download_size,
@@ -248,6 +252,17 @@ fn meta_provider(meta: &payload::Meta) -> Option<Provider> {
         Some(Provider {
             kind: dependency::Kind::from(kind),
             name,
+        })
+    } else {
+        None
+    }
+}
+
+fn meta_conflict(meta: &payload::Meta) -> Option<Conflict> {
+    if let payload::meta::Kind::Provider(kind, name) = meta.kind.clone() {
+        Some(Conflict {
+            kind: dependency::Kind::from(kind),
+            name: name,
         })
     } else {
         None
