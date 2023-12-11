@@ -259,13 +259,14 @@ fn meta_provider(meta: &payload::Meta) -> Option<Provider> {
 }
 
 fn meta_conflict(meta: &payload::Meta) -> Option<Conflict> {
-    if let payload::meta::Kind::Provider(kind, name) = meta.kind.clone() {
-        Some(Conflict {
-            kind: dependency::Kind::from(kind),
-            name: name,
-        })
-    } else {
-        None
+    match (meta.tag, &meta.kind) {
+        (payload::meta::Tag::Conflicts, payload::meta::Kind::Provider(kind, name)) => {
+            Some(Conflict {
+                kind: dependency::Kind::from(*kind),
+                name: name.clone(),
+            })
+        }
+        _ => None,
     }
 }
 
