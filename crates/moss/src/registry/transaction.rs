@@ -229,15 +229,11 @@ impl<'a> Transaction<'a> {
                 if visited.contains(package_id) {
                     let reasons: Vec<package::Id> = graph
                         .neighbors_outgoing(&(package_id.clone(), false))
-                        .filter_map(|revdep| {
-                            if let (revdep_id, true) = revdep {
-                                match visited.contains(revdep_id) {
-                                    true => Some(revdep_id.clone()),
-                                    false => None,
-                                }
-                            } else {
-                                None
+                        .filter_map(|revdep| match revdep {
+                            (revdep_id, true) if visited.contains(revdep_id) => {
+                                Some(revdep_id.clone())
                             }
+                            _ => None,
                         })
                         .collect();
                     conflicts.push((package_id.clone(), reasons))
