@@ -10,7 +10,7 @@ summary     : A certain Italian pizza that hates pineapples
 description : Me no like pineapples.
 license     : Zlib
 homepage    : https://github.com/serpent-os
-conflict    :
+conflicts   :
     - pineapple
 install     : |
     mkdir -p %(installroot)/%(vendordir)
