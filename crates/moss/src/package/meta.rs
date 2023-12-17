@@ -248,13 +248,14 @@ fn meta_dependency(meta: &payload::Meta) -> Option<Dependency> {
 }
 
 fn meta_provider(meta: &payload::Meta) -> Option<Provider> {
-    if let payload::meta::Kind::Provider(kind, name) = meta.kind.clone() {
-        Some(Provider {
-            kind: dependency::Kind::from(kind),
-            name,
-        })
-    } else {
-        None
+    match (meta.tag, &meta.kind) {
+        (payload::meta::Tag::Provides, payload::meta::Kind::Provider(kind, name)) => {
+            Some(Provider {
+                kind: dependency::Kind::from(*kind),
+                name: name.clone(),
+            })
+        }
+        _ => None,
     }
 }
 
